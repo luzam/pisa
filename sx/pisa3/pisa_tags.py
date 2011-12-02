@@ -22,7 +22,7 @@ from pisa_default import DEFAULT_CSS
 from pisa_reportlab import *
 from pisa_util import *
 
-from reportlab.graphics.barcode.code39 import Standard39
+from reportlab.graphics.barcode.code128 import Code128
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus.flowables import *
 from reportlab.platypus.paraparser import tt2ps, ABag
@@ -591,7 +591,7 @@ class pisaTagPDFBARCODE(pisaTag):
     def start(self, c):
         c.addPara()
         attr = self.attr       
-        bc = Standard39()
+        bc = Code128()
         bc.value = attr.value
         bc.barHeight = 0.5 * inch
         bc.lquiet = 0 # left padding
