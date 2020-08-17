@@ -10,7 +10,7 @@ from six.moves import filter
 from six.moves import map
 from six.moves import range
 __version__=''' $Id: paragraph.py 3307 2008-10-13 15:28:30Z rgbecker $ '''
-from string import join, whitespace
+from string import whitespace
 from operator import truth
 from types import StringType, ListType
 from reportlab.pdfbase.pdfmetrics import stringWidth, getFont, getAscentDescent
@@ -23,6 +23,9 @@ from reportlab.lib.textsplit import wordSplit, ALL_CANNOT_START
 from copy import deepcopy
 from reportlab.lib.abag import ABag
 import re
+
+# replace `from string import join`
+join = " ".join
 
 PARAGRAPH_DEBUG = False
 LEADING_FACTOR = 1.0
