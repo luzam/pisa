@@ -8,7 +8,7 @@
 from __future__ import absolute_import
 import cherrypy as cp
 import sx.pisa3 as pisa
-import cStringIO as StringIO
+import six
 
 try:
     import kid
@@ -56,9 +56,9 @@ class PDFDemo(object):
             test = kid.Template(source=data)
             data = test.serialize(output='xhtml')
 
-        result = StringIO.StringIO()
+        result = six.moves.StringIO()
         pdf = pisa.CreatePDF(
-            StringIO.StringIO(data),
+            six.moves.StringIO(data),
             result
             )
         if pdf.err:

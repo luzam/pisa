@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response
 from django.template.loader import get_template
 from django.template import Context
 import ho.pisa as pisa
-import cStringIO as StringIO
+import six
 import cgi
 from six.moves import range
 
@@ -29,9 +29,9 @@ def index(request):
 
 def download(request):
     if request.POST:
-        result = StringIO.StringIO()
+        result = six.moves.StringIO()
         pdf = pisa.CreatePDF(
-            StringIO.StringIO(request.POST["data"]),
+            six.moves.StringIO(request.POST["data"]),
             result
             )
 
@@ -46,8 +46,8 @@ def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
     context = Context(context_dict)
     html  = template.render(context)
-    result = StringIO.StringIO()
-    pdf = pisa.pisaDocument(StringIO.StringIO(html.encode("ISO-8859-1")), result)
+    result = six.moves.StringIO()
+    pdf = pisa.pisaDocument(six.moves.StringIO(html.encode("ISO-8859-1")), result)
     if not pdf.err:
         return http.HttpResponse(result.getvalue(), mimetype='application/pdf')
     return http.HttpResponse('We had some errors<pre>%s</pre>' % cgi.escape(html))

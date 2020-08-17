@@ -140,7 +140,7 @@ class PmlPageTemplate(PageTemplate):
                 if self.pisaBackground.mimetype.startswith("image/"):
 
                     try:
-                        img = PmlImageReader(StringIO.StringIO(self.pisaBackground.getData()))
+                        img = PmlImageReader(six.moves.StringIO(self.pisaBackground.getData()))
                         iw, ih = img.getSize()
                         pw, ph = canvas._pagesize
 
@@ -230,7 +230,7 @@ class PmlImageReader(object):
         else:
             try:
                 self.fp = open_for_read(fileName, 'b')
-                if isinstance(self.fp, StringIO.StringIO().__class__):  
+                if isinstance(self.fp, six.moves.StringIO().__class__):  
                     imageReaderFlags = 0 #avoid messing with already internal files
                 if imageReaderFlags > 0:  #interning
                     data = self.fp.read()
@@ -395,7 +395,7 @@ class PmlImage(Flowable, PmlMaxHeightMixIn):
     def getImage(self):
         #if self.kw:
         #    print "img", self.kw, hash(self._imgdata)
-        img = PmlImageReader(StringIO.StringIO(self._imgdata))
+        img = PmlImageReader(six.moves.StringIO(self._imgdata))
         # print id(self._imgdata), hash(img.getRGBData())
         return img
 

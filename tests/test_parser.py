@@ -2,7 +2,7 @@ from __future__ import absolute_import
 import unittest
 from sx.pisa3.pisa_parser import pisaParser
 from sx.pisa3.pisa_context import pisaContext
-import StringIO
+
 
 _data = """
 <!doctype html>

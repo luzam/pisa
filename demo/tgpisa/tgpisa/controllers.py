@@ -17,7 +17,7 @@ Please run your projects setup.py or run `easy_install SQLObject`.
 
 from turbogears.decorator import weak_signature_decorator
 import sx.pisa3 as pisa
-import cStringIO as StringIO
+import six
 import cherrypy
 
 def pdf(filename=None, content_type="application/pdf"):
@@ -32,9 +32,9 @@ def pdf(filename=None, content_type="application/pdf"):
             # get the output from the decorated function
             output = func(*args, **kw)
 
-            dst = StringIO.StringIO()
+            dst = six.moves.StringIO()
             result = pisa.CreatePDF(
-                StringIO.StringIO(output),
+                six.moves.StringIO(output),
                 dst
                 )
 

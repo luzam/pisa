@@ -49,6 +49,7 @@ import mimetypes
 import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
 import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import six.moves.http_client
+import six
 import tempfile 
 import shutil
 
@@ -64,10 +65,7 @@ REPORTLAB22 = _reportlab_version >= (2, 2)
 import logging
 log = logging.getLogger("ho.pisa")
 
-try:
-    import cStringIO as StringIO
-except:
-    import StringIO
+
 
 try:
     import pyPdf
@@ -360,11 +358,11 @@ GAE = "google.appengine" in sys.modules
 
 if GAE:
     STRATEGIES = (
-        StringIO.StringIO,
-        StringIO.StringIO)
+        six.moves.StringIO,
+        six.moves.StringIO)
 else:
     STRATEGIES = (
-        StringIO.StringIO,
+        six.moves.StringIO,
         tempfile.NamedTemporaryFile)
 
 class pisaTempFile(object): 
@@ -516,7 +514,7 @@ class pisaFileObject:
                     self.mimetype = r1.getheader("Content-Type", None).split(";")[0]
                     self.uri = uri
                     if r1.getheader("content-encoding") == "gzip":
-                        # zbuf = cStringIO.StringIO(data)
+                        # zbuf = csix.moves.StringIO(data)
                         import gzip
                         self.file = gzip.GzipFile(mode="rb", fileobj=r1)
                         #data = zfile.read()

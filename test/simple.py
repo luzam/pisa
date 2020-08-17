@@ -23,7 +23,7 @@ __date__    = "$Date: 2008-04-18 18:59:53 +0200 (Fr, 18 Apr 2008) $"
 import os
 import sys
 import cgi
-import cStringIO
+import six
 import logging
 
 import ho.pisa as pisa
@@ -51,7 +51,7 @@ def testSimple(
     """
 
     pdf = pisa.CreatePDF(
-        cStringIO.StringIO(data),
+        six.moves.StringIO(data),
         open(dest, "wb")
         )
 
@@ -67,10 +67,10 @@ def testCGI(data="Hello <b>World</b>"):
     file object and then send it to STDOUT
     """
 
-    result = cStringIO.StringIO()
+    result = six.moves.StringIO()
 
     pdf = pisa.CreatePDF(
-        cStringIO.StringIO(data),
+        six.moves.StringIO(data),
         result
         )
 

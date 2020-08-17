@@ -21,16 +21,16 @@ __date__      = "$Date: 2007-10-09 12:58:24 +0200 (Di, 09 Okt 2007) $"
 
 from turbogears.decorator import weak_signature_decorator
 import sx.pisa3 as pisa
-import StringIO
+import six
 import cherrypy
 
 def to_pdf(filename=None, content_type="application/pdf"):
     def entangle(func):
         def decorated(func, *args, **kw):
             output = func(*args, **kw)
-            dst = StringIO.StringIO()
+            dst = six.moves.StringIO()
             result = pisa.CreatePDF(
-                StringIO.StringIO(output),
+                six.moves.StringIO(output),
                 dst
                 )
             if not result.err:
