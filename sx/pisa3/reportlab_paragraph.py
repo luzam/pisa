@@ -12,7 +12,7 @@ from six.moves import range
 __version__=''' $Id: paragraph.py 3307 2008-10-13 15:28:30Z rgbecker $ '''
 from string import whitespace
 from operator import truth
-from types import StringType, ListType
+from types import *
 from reportlab.pdfbase.pdfmetrics import stringWidth, getFont, getAscentDescent
 from reportlab.platypus.paraparser import ParaParser
 from reportlab.platypus.flowables import Flowable
@@ -26,6 +26,12 @@ import re
 
 # replace `from string import join`
 join = " ".join
+
+
+# replace `from type import StringType, ListType`
+StringType = type('')
+ListType = type([])
+
 
 PARAGRAPH_DEBUG = False
 LEADING_FACTOR = 1.0
