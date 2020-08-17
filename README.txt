@@ -1,6 +1,13 @@
 HELP
 ====
 
+FORK
+====
+
+This fork fixes:
+- reportlab import allowed > 2.x
+
+
 > xhtml2pdf -h
 
 REQUIREMENTS
