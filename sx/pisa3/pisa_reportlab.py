@@ -15,6 +15,10 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
+from six.moves import map
+import six
+from six.moves import range
 __reversion__ = "$Revision: 20 $"
 __author__ = "$Author: holtwick $"
 __date__ = "$Date: 2007-10-09 12:58:24 +0200 (Di, 09 Okt 2007) $"
@@ -25,7 +29,7 @@ from reportlab.platypus.flowables import Flowable, Image, CondPageBreak, KeepInF
 from reportlab.platypus.frames import Frame
 from reportlab.platypus.tableofcontents import TableOfContents
 
-from reportlab_paragraph import Paragraph
+from .reportlab_paragraph import Paragraph
 
 from reportlab.lib.utils import *
 
@@ -37,8 +41,8 @@ except:
     except:
         PILImage = None    
 
-from pisa_util import *
-from pisa_default import TAGS, STRING
+from .pisa_util import *
+from .pisa_default import TAGS, STRING
         
 import copy
 import cgi
@@ -192,7 +196,7 @@ class PmlPageTemplate(PageTemplate):
 
                     frame.addFromList(story, canvas)
 
-            except Exception, e:
+            except Exception as e:
                 log.debug("PmlPageTemplate", exc_info=1)
 
 
@@ -241,7 +245,7 @@ class PmlImageReader(object):
                             register_reset(self._cache.clear)
                         data = self._cache.setdefault(md5(data).digest(), data)
                     self.fp = getStringIO(data)
-                elif imageReaderFlags == - 1 and isinstance(fileName, (str, unicode)):
+                elif imageReaderFlags == - 1 and isinstance(fileName, (str, six.text_type)):
                     #try Ralf Schmitt's re-opening technique of avoiding too many open files
                     self.fp.close()
                     del self.fp #will become a property in the next statement
@@ -267,7 +271,7 @@ class PmlImageReader(object):
                 if hasattr(ev, 'args'):
                     a = str(ev.args[ - 1]) + (' fileName=%r' % fileName)
                     ev.args = ev.args[: - 1] + (a,)
-                    raise et, ev, tb
+                    six.reraise(et, ev, tb)
                 else:
                     raise
 
@@ -338,14 +342,14 @@ class PmlImageReader(object):
         if sys.platform[0:4] == 'java':
             return None
         else:
-            if self._image.info.has_key("transparency"):
+            if "transparency" in self._image.info:
                 transparency = self._image.info["transparency"] * 3
                 palette = self._image.palette
                 try:
                     palette = palette.palette
                 except:
                     palette = palette.data
-                return map(ord, palette[transparency:transparency + 3])
+                return list(map(ord, palette[transparency:transparency + 3]))
             else:
                 return None
 

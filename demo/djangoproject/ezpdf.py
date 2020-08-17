@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- encoding: utf-8 -*-
 
+from __future__ import absolute_import
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse

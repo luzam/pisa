@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 __reversion__ = "$Revision: 238 $"
 __author__    = "$Author: holtwick $"
 __date__      = "$Date: 2008-06-26 20:06:02 +0200 (Do, 26 Jun 2008) $"
@@ -38,10 +39,10 @@ import logging
 log = logging.getLogger(__name__)
 
 try:
-    from pisa import *
+    from .pisa import *
     if not REPORTLAB22:
-        raise ImportError, "Reportlab Toolkit Version 2.2 or higher needed"
-except ImportError, e:
+        raise ImportError("Reportlab Toolkit Version 2.2 or higher needed")
+except ImportError as e:
     import sys
     sys.stderr.write(REQUIRED_INFO % e)
     log.error(REQUIRED_INFO % e)

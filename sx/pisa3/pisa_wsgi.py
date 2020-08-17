@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License. 
 
+from __future__ import absolute_import
+from __future__ import print_function
 __version__ = "$Revision: 103 $"
 __author__  = "$Author: holtwick $"
 __date__    = "$Date: 2007-10-31 17:08:54 +0100 (Mi, 31 Okt 2007) $"
@@ -58,7 +60,7 @@ class Filter(object):
         return [body]
 
     def should_filter(self, status, headers):
-        print headers
+        print(headers)
     
     def filter(self, status, headers, body):
         raise NotImplementedError

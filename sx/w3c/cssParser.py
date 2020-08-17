@@ -32,8 +32,10 @@ Dependencies:
 #~ Imports
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+from __future__ import absolute_import
 import re
-import cssSpecial
+from . import cssSpecial
+import six
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~ Definitions
@@ -356,7 +358,7 @@ class CSSParser(object):
                         
             try:
                 src, stylesheet = self._parseStylesheet(src)
-            except self.ParseError, err:
+            except self.ParseError as err:
                 err.setFullCSSSource(src)
                 raise
         finally:
@@ -371,7 +373,7 @@ class CSSParser(object):
         try:
             try:
                 src, properties = self._parseDeclarationGroup(src.strip(), braces=False)
-            except self.ParseError, err:
+            except self.ParseError as err:
                 err.setFullCSSSource(src, inline=True)
                 raise
 
@@ -393,11 +395,11 @@ class CSSParser(object):
         try:
             properties = []
             try:
-                for propertyName, src in kwAttributes.iteritems():
+                for propertyName, src in six.iteritems(kwAttributes):
                     src, property = self._parseDeclarationProperty(src.strip(), propertyName)
                     properties.append(property)
 
-            except self.ParseError, err:
+            except self.ParseError as err:
                 err.setFullCSSSource(src, inline=True)
                 raise
 
@@ -1052,7 +1054,7 @@ class CSSParser(object):
             rexpression = self.re_string
         result = rexpression.match(src)
         if result:
-            strres = filter(None, result.groups())
+            strres = [_f for _f in result.groups() if _f]
             if strres:
                 strres = strres[0]
             else:

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 __version__ = "$Revision: 176 $"
 __author__  = "$Author: holtwick $"
 __date__    = "$Date: 2008-03-15 00:11:47 +0100 (Sa, 15 Mrz 2008) $"
@@ -41,7 +42,7 @@ def HTML2PDF(data, filename, open=False):
 
     pdf = pisa.CreatePDF(
         cStringIO.StringIO(data),
-        file(filename, "wb"))
+        open(filename, "wb"))
 
     if open and (not pdf.err):
         pisa.startViewer(filename)

@@ -14,20 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+import six
 __reversion__ = "$Revision: 20 $"
 __author__ = "$Author: holtwick $"
 __date__ = "$Date: 2007-10-09 12:58:24 +0200 (Di, 09 Okt 2007) $"
 
-from pisa_default import DEFAULT_CSS
-from pisa_reportlab import *
-from pisa_util import *
+from .pisa_default import DEFAULT_CSS
+from .pisa_reportlab import *
+from .pisa_util import *
 
 from reportlab.graphics.barcode.code128 import Code128
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus.flowables import *
 from reportlab.platypus.paraparser import tt2ps, ABag
 
-from reportlab_paragraph import cleanBlockQuotedText
+from .reportlab_paragraph import cleanBlockQuotedText
 
 import reportlab.lib.utils
 
@@ -158,7 +160,7 @@ class pisaTagH6(pisaTagP): pass
 
 def listDecimal(c):
     c.listCounter += 1
-    return unicode("%d." % c.listCounter)
+    return six.text_type("%d." % c.listCounter)
 
 _bullet = u"\u2022"
 _list_style_type = {
@@ -377,7 +379,7 @@ class pisaTagHR(pisaTag):
 
 # --- Forms
 
-import pisa_reportlab
+from . import pisa_reportlab
 
 if 0:
     
@@ -533,7 +535,7 @@ class pisaTagPDFTEMPLATE(pisaTag):
         name = attrs["name"]
         c.frameList = []
         c.frameStaticList = []
-        if c.templateList.has_key(name):
+        if name in c.templateList:
             log.warn(c.warning("template '%s' has already been defined", name))
        
         '''

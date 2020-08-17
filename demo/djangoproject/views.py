@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- encoding: utf-8 -*-
 
+from __future__ import absolute_import
 from django import http
 from django.shortcuts import render_to_response
 from django.template.loader import get_template
@@ -8,6 +9,7 @@ from django.template import Context
 import ho.pisa as pisa
 import cStringIO as StringIO
 import cgi
+from six.moves import range
 
 def index(request):
     return http.HttpResponse("""

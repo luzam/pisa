@@ -15,6 +15,9 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
+import six
+from six.moves import map
 __reversion__ = "$Revision: 20 $"
 __author__ = "$Author: holtwick $"
 __date__ = "$Date: 2007-10-09 12:58:24 +0200 (Di, 09 Okt 2007) $"
@@ -41,11 +44,11 @@ import sys
 import string
 import re
 import base64
-import urlparse
+import six.moves.urllib.parse
 import mimetypes
-import urllib2
-import urllib
-import httplib
+import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import six.moves.http_client
 import tempfile 
 import shutil
 
@@ -94,7 +97,7 @@ def ErrorMsg():
         list[ - 1])
 
 def toList(value):
-    if type(value) not in (types.ListType, types.TupleType):
+    if type(value) not in (list, tuple):
         return [value]
     return list(value)
 
@@ -116,7 +119,7 @@ def flatten(x):
     result = []
     for el in x:
         #if isinstance(el, (list, tuple)):
-        if hasattr(el, "__iter__") and not isinstance(el, basestring):
+        if hasattr(el, "__iter__") and not isinstance(el, six.string_types):
             result.extend(flatten(el))
         else:
             result.append(el)
@@ -126,14 +129,14 @@ def _toColor(arg, default=None):
     '''try to map an arbitrary arg to a color instance'''
     if isinstance(arg, Color): return arg
     tArg = type(arg)
-    if tArg in (types.ListType, types.TupleType):
+    if tArg in (list, tuple):
         assert 3 <= len(arg) <= 4, 'Can only convert 3 and 4 sequences to color'
         assert 0 <= min(arg) and max(arg) <= 1
         return len(arg) == 3 and Color(arg[0], arg[1], arg[2]) or CMYKColor(arg[0], arg[1], arg[2], arg[3])
-    elif tArg == types.StringType:
+    elif tArg == bytes:
         C = getAllNamedColors()
         s = arg.lower()
-        if C.has_key(s): return C[s]
+        if s in C: return C[s]
         try:
             return toColor(eval(arg))
         except:
@@ -169,7 +172,7 @@ def getColor(value, default=None):
         # XXX Throws illegal in 2.1 e.g. toColor('none'),
         # therefore we have a workaround here
         return _toColor(value)
-    except ValueError, e:
+    except ValueError as e:
         log.warn("Unknown color %r", original)
     return default
 
@@ -230,11 +233,11 @@ def getSize(value, relative=0, base=None, default=0.0):
         original = value
         if value is None:
             return relative
-        elif type(value) is types.FloatType:
+        elif type(value) is float:
             return value
-        elif type(value) is types.IntType:
+        elif type(value) is int:
             return float(value)
-        elif type(value) in (types.TupleType, types.ListType):
+        elif type(value) in (tuple, list):
             value = "".join(value)
         value = str(value).strip().lower().replace(",", ".")
         if value[ - 2:] == 'cm':
@@ -265,11 +268,11 @@ def getSize(value, relative=0, base=None, default=0.0):
                 return (relative * float(value[: - 1].strip())) / 100.0 # 1% = (fontSize * 1) / 100
             elif value in ("normal", "inherit"):
                 return relative
-            elif _relativeSizeTable.has_key(value):
+            elif value in _relativeSizeTable:
                 if base:
                     return max(MIN_FONT_SIZE, base * _relativeSizeTable[value])
                 return max(MIN_FONT_SIZE, relative * _relativeSizeTable[value])
-            elif _absoluteSizeTable.has_key(value):
+            elif value in _absoluteSizeTable:
                 if base:
                     return max(MIN_FONT_SIZE, base * _absoluteSizeTable[value])
                 return max(MIN_FONT_SIZE, relative * _absoluteSizeTable[value])
@@ -313,8 +316,8 @@ def getBox(box, pagesize):
     """
     box = str(box).split()
     if len(box) != 4:
-        raise Exception, "box not defined right way"
-    x, y, w, h = map(getSize, box)
+        raise Exception("box not defined right way")
+    x, y, w, h = list(map(getSize, box))
     return getCoords(x, y, w, h, pagesize)
 
 def getPos(position, pagesize):
@@ -323,8 +326,8 @@ def getPos(position, pagesize):
     """
     position = str(position).split()
     if len(position) != 2:
-        raise Exception, "position not defined right way"
-    x, y = map(getSize, position)
+        raise Exception("position not defined right way")
+    x, y = list(map(getSize, position))
     return getCoords(x, y, None, None, pagesize)
 
 def getBool(s):
@@ -483,9 +486,9 @@ class pisaFileObject:
 
             # Check if we have an external scheme
             if basepath and not (uri.startswith("http://") or uri.startswith("https://")):
-                urlParts = urlparse.urlparse(basepath)
+                urlParts = six.moves.urllib.parse.urlparse(basepath)
             else:
-                urlParts = urlparse.urlparse(uri)
+                urlParts = six.moves.urllib.parse.urlparse(uri)
 
             log.debug("URLParts: %r", urlParts)
 
@@ -494,17 +497,17 @@ class pisaFileObject:
 
                 # External data
                 if basepath:
-                    uri = urlparse.urljoin(basepath, uri)
+                    uri = six.moves.urllib.parse.urljoin(basepath, uri)
 
                 #path = urlparse.urlsplit(url)[2]
                 #mimetype = getMimeType(path)
                 
                 # Using HTTPLIB
-                server, path = urllib.splithost(uri[uri.find("//"):])
+                server, path = six.moves.urllib.parse.splithost(uri[uri.find("//"):])
                 if uri.startswith("https://"):
-                    conn = httplib.HTTPSConnection(server)
+                    conn = six.moves.http_client.HTTPSConnection(server)
                 else:
-                    conn = httplib.HTTPConnection(server)
+                    conn = six.moves.http_client.HTTPConnection(server)
                 conn.request("GET", path)
                 r1 = conn.getresponse()
                 # log.debug("HTTP %r %r %r %r", server, path, uri, r1)
@@ -522,7 +525,7 @@ class pisaFileObject:
                         self.file = r1                    
                     # self.file = urlResponse
                 else:                              
-                    urlResponse = urllib2.urlopen(uri)
+                    urlResponse = six.moves.urllib.request.urlopen(uri)
                     self.mimetype = urlResponse.info().get("Content-Type", None).split(";")[0]
                     self.uri = urlResponse.geturl()
                     self.file = urlResponse

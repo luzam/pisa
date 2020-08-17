@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 __reversion__ = "$Revision: 20 $"
 __author__ = "$Author: holtwick $"
 __date__ = "$Date: 2007-10-09 12:58:24 +0200 (Di, 09 Okt 2007) $"
@@ -30,10 +31,10 @@ from html5lib import treebuilders, serializer, treewalkers, inputstream
 from xml.dom import Node
 import xml.dom.minidom
 
-from pisa_default import *
-from pisa_util import *
-from pisa_tags import *
-from pisa_tables import *
+from .pisa_default import *
+from .pisa_util import *
+from .pisa_tags import *
+from .pisa_tables import *
 
 import sx.w3c.css as css
 import sx.w3c.cssDOMElementInterface as cssDOMElementInterface
@@ -63,7 +64,7 @@ def pisaGetAttributes(c, tag, attributes):
                 attrs[k] = v
                 
     nattrs = {}
-    if TAGS.has_key(tag):        
+    if tag in TAGS:        
         block, adef = TAGS[tag]
         adef["id"] = STRING
         # print block, adef
@@ -71,9 +72,9 @@ def pisaGetAttributes(c, tag, attributes):
             nattrs[k] = None
             # print k, v
             # defaults, wenn vorhanden
-            if type(v) == types.TupleType:                
+            if type(v) == tuple:                
                 if v[1] == MUST:
-                    if not attrs.has_key(k):
+                    if k not in attrs:
                         log.warn(c.warning("Attribute '%s' must be set!", k))
                         nattrs[k] = None
                         continue
@@ -86,7 +87,7 @@ def pisaGetAttributes(c, tag, attributes):
             try:
                 if nv is not None:
                     
-                    if type(v) == types.ListType:
+                    if type(v) == list:
                         nv = nv.strip().lower()
                         if nv not in v:
                             #~ raise PML_EXCEPTION, "attribute '%s' of wrong value, allowed is one of: %s" % (k, repr(v))
@@ -127,7 +128,7 @@ def pisaGetAttributes(c, tag, attributes):
             #    if not nattrs.has_key(k):
             #        c.warning("attribute '%s' for tag <%s> not supported" % (k, tag))
 
-            except Exception, e:
+            except Exception as e:
                 log.exception(c.error("Tag handling"))
 
     #else:
@@ -201,7 +202,7 @@ def getCSSAttr(self, cssCascade, attrName, default=NotImplemented):
         style = self.cssStyle
     except:
         style = self.cssStyle = cssCascade.parser.parseInline(self.cssElement.getStyleAttr() or '')[0]        
-    if style.has_key(attrName):
+    if attrName in style:
         result = style[attrName]        
         
     if result == 'inherit':
@@ -237,26 +238,26 @@ def CSSCollect(node, c):
 
 def CSS2Frag(c, kw, isBlock):    
     # COLORS
-    if c.cssAttr.has_key("color"):
+    if "color" in c.cssAttr:
         c.frag.textColor = getColor(c.cssAttr["color"])    
-    if c.cssAttr.has_key("background-color"):
+    if "background-color" in c.cssAttr:
         c.frag.backColor = getColor(c.cssAttr["background-color"])
     # FONT SIZE, STYLE, WEIGHT    
-    if c.cssAttr.has_key("font-family"):
+    if "font-family" in c.cssAttr:
         c.frag.fontName = c.getFontName(c.cssAttr["font-family"])    
-    if c.cssAttr.has_key("font-size"):
+    if "font-size" in c.cssAttr:
         # XXX inherit
         c.frag.fontSize = max(getSize("".join(c.cssAttr["font-size"]), c.frag.fontSize, c.baseFontSize), 1.0)    
-    if c.cssAttr.has_key("line-height"):
+    if "line-height" in c.cssAttr:
         leading = "".join(c.cssAttr["line-height"])
         c.frag.leading = getSize(leading, c.frag.fontSize)
         c.frag.leadingSource = leading
     else:
         c.frag.leading = getSize(c.frag.leadingSource, c.frag.fontSize)
-    if c.cssAttr.has_key("-pdf-line-spacing"):         
+    if "-pdf-line-spacing" in c.cssAttr:         
         c.frag.leadingSpace = getSize("".join(c.cssAttr["-pdf-line-spacing"]))    
         # print "line-spacing", c.cssAttr["-pdf-line-spacing"], c.frag.leading                            
-    if c.cssAttr.has_key("font-weight"):
+    if "font-weight" in c.cssAttr:
         value = c.cssAttr["font-weight"].lower()
         if value in ("bold", "bolder", "500", "600", "700", "800", "900"):
             c.frag.bold = 1
@@ -270,32 +271,32 @@ def CSS2Frag(c, kw, isBlock):
         if "none" in value:
             c.frag.underline = 0
             c.frag.strike = 0
-    if c.cssAttr.has_key("font-style"):
+    if "font-style" in c.cssAttr:
         value = c.cssAttr["font-style"].lower()
         if value in ("italic", "oblique"):
             c.frag.italic = 1
         else:
             c.frag.italic = 0
-    if c.cssAttr.has_key("white-space"):
+    if "white-space" in c.cssAttr:
         # normal | pre | nowrap
         c.frag.whiteSpace = str(c.cssAttr["white-space"]).lower()
     # ALIGN & VALIGN
-    if c.cssAttr.has_key("text-align"):
+    if "text-align" in c.cssAttr:
         c.frag.alignment = getAlign(c.cssAttr["text-align"])
-    if c.cssAttr.has_key("vertical-align"):
+    if "vertical-align" in c.cssAttr:
         c.frag.vAlign = c.cssAttr["vertical-align"]
     # HEIGHT & WIDTH
-    if c.cssAttr.has_key("height"):
+    if "height" in c.cssAttr:
         c.frag.height = "".join(toList(c.cssAttr["height"])) # XXX Relative is not correct!
         if c.frag.height in ("auto",):
             c.frag.height = None
-    if c.cssAttr.has_key("width"):
+    if "width" in c.cssAttr:
         # print c.cssAttr["width"]
         c.frag.width = "".join(toList(c.cssAttr["width"])) # XXX Relative is not correct!
         if c.frag.width in ("auto",):
             c.frag.width = None
     # ZOOM
-    if c.cssAttr.has_key("zoom"):
+    if "zoom" in c.cssAttr:
         # print c.cssAttr["width"]
         zoom = "".join(toList(c.cssAttr["zoom"])) # XXX Relative is not correct!
         if zoom.endswith("%"):
@@ -303,61 +304,61 @@ def CSS2Frag(c, kw, isBlock):
         c.frag.zoom = float(zoom)
     # MARGINS & LIST INDENT, STYLE
     if isBlock:
-        if c.cssAttr.has_key("margin-top"):
+        if "margin-top" in c.cssAttr:
             c.frag.spaceBefore = getSize(c.cssAttr["margin-top"], c.frag.fontSize)
-        if c.cssAttr.has_key("margin-bottom"):
+        if "margin-bottom" in c.cssAttr:
             c.frag.spaceAfter = getSize(c.cssAttr["margin-bottom"], c.frag.fontSize)
-        if c.cssAttr.has_key("margin-left"):
+        if "margin-left" in c.cssAttr:
             c.frag.bulletIndent = kw["margin-left"] # For lists
             kw["margin-left"] += getSize(c.cssAttr["margin-left"], c.frag.fontSize)
             c.frag.leftIndent = kw["margin-left"]
         # print "MARGIN LEFT", kw["margin-left"], c.frag.bulletIndent
-        if c.cssAttr.has_key("margin-right"):
+        if "margin-right" in c.cssAttr:
             kw["margin-right"] += getSize(c.cssAttr["margin-right"], c.frag.fontSize)
             c.frag.rightIndent = kw["margin-right"]
         # print c.frag.rightIndent
-        if c.cssAttr.has_key("text-indent"):
+        if "text-indent" in c.cssAttr:
             c.frag.firstLineIndent = getSize(c.cssAttr["text-indent"], c.frag.fontSize)
-        if c.cssAttr.has_key("list-style-type"):
+        if "list-style-type" in c.cssAttr:
             c.frag.listStyleType = str(c.cssAttr["list-style-type"]).lower()
-        if c.cssAttr.has_key("list-style-image"):
+        if "list-style-image" in c.cssAttr:
             c.frag.listStyleImage = c.getFile(c.cssAttr["list-style-image"])
     # PADDINGS
     if isBlock:
-        if c.cssAttr.has_key("padding-top"):
+        if "padding-top" in c.cssAttr:
             c.frag.paddingTop = getSize(c.cssAttr["padding-top"], c.frag.fontSize)
-        if c.cssAttr.has_key("padding-bottom"):
+        if "padding-bottom" in c.cssAttr:
             c.frag.paddingBottom = getSize(c.cssAttr["padding-bottom"], c.frag.fontSize)
-        if c.cssAttr.has_key("padding-left"):
+        if "padding-left" in c.cssAttr:
             c.frag.paddingLeft = getSize(c.cssAttr["padding-left"], c.frag.fontSize)
-        if c.cssAttr.has_key("padding-right"):
+        if "padding-right" in c.cssAttr:
             c.frag.paddingRight = getSize(c.cssAttr["padding-right"], c.frag.fontSize)
     # BORDERS
     if isBlock:
-        if c.cssAttr.has_key("border-top-width"):
+        if "border-top-width" in c.cssAttr:
             # log.debug(c.cssAttr["border-top-width"])
             c.frag.borderTopWidth = getSize(c.cssAttr["border-top-width"], c.frag.fontSize)
-        if c.cssAttr.has_key("border-bottom-width"):
+        if "border-bottom-width" in c.cssAttr:
             c.frag.borderBottomWidth = getSize(c.cssAttr["border-bottom-width"], c.frag.fontSize)
-        if c.cssAttr.has_key("border-left-width"):
+        if "border-left-width" in c.cssAttr:
             c.frag.borderLeftWidth = getSize(c.cssAttr["border-left-width"], c.frag.fontSize)
-        if c.cssAttr.has_key("border-right-width"):
+        if "border-right-width" in c.cssAttr:
             c.frag.borderRightWidth = getSize(c.cssAttr["border-right-width"], c.frag.fontSize)
-        if c.cssAttr.has_key("border-top-style"):
+        if "border-top-style" in c.cssAttr:
             c.frag.borderTopStyle = c.cssAttr["border-top-style"]
-        if c.cssAttr.has_key("border-bottom-style"):
+        if "border-bottom-style" in c.cssAttr:
             c.frag.borderBottomStyle = c.cssAttr["border-bottom-style"]
-        if c.cssAttr.has_key("border-left-style"):
+        if "border-left-style" in c.cssAttr:
             c.frag.borderLeftStyle = c.cssAttr["border-left-style"]
-        if c.cssAttr.has_key("border-right-style"):
+        if "border-right-style" in c.cssAttr:
             c.frag.borderRightStyle = c.cssAttr["border-right-style"]
-        if c.cssAttr.has_key("border-top-color"):
+        if "border-top-color" in c.cssAttr:
             c.frag.borderTopColor = getColor(c.cssAttr["border-top-color"])
-        if c.cssAttr.has_key("border-bottom-color"):
+        if "border-bottom-color" in c.cssAttr:
             c.frag.borderBottomColor = getColor(c.cssAttr["border-bottom-color"])
-        if c.cssAttr.has_key("border-left-color"):
+        if "border-left-color" in c.cssAttr:
             c.frag.borderLeftColor = getColor(c.cssAttr["border-left-color"])
-        if c.cssAttr.has_key("border-right-color"):
+        if "border-right-color" in c.cssAttr:
             c.frag.borderRightColor = getColor(c.cssAttr["border-right-color"])
 
 def pisaPreLoop(node, c, collect=False):
@@ -460,17 +461,17 @@ def pisaLoop(node, c, path=[], **kw):
             c.addPara()
 
             # Page break by CSS
-            if c.cssAttr.has_key("-pdf-next-page"):                 
+            if "-pdf-next-page" in c.cssAttr:                 
                 c.addStory(NextPageTemplate(str(c.cssAttr["-pdf-next-page"])))
-            if c.cssAttr.has_key("-pdf-page-break"):
+            if "-pdf-page-break" in c.cssAttr:
                 if str(c.cssAttr["-pdf-page-break"]).lower() == "before":
                     c.addStory(PageBreak()) 
-            if c.cssAttr.has_key("-pdf-frame-break"): 
+            if "-pdf-frame-break" in c.cssAttr: 
                 if str(c.cssAttr["-pdf-frame-break"]).lower() == "before":
                     c.addStory(FrameBreak()) 
                 if str(c.cssAttr["-pdf-frame-break"]).lower() == "after":
                     frameBreakAfter = True
-            if c.cssAttr.has_key("page-break-before"):            
+            if "page-break-before" in c.cssAttr:            
                 if str(c.cssAttr["page-break-before"]).lower() == "always":
                     c.addStory(PageBreak()) 
                 if str(c.cssAttr["page-break-before"]).lower() == "right":
@@ -479,7 +480,7 @@ def pisaLoop(node, c, path=[], **kw):
                 if str(c.cssAttr["page-break-before"]).lower() == "left":
                     c.addStory(PageBreak()) 
                     c.addStory(PmlLeftPageBreak())
-            if c.cssAttr.has_key("page-break-after"):            
+            if "page-break-after" in c.cssAttr:            
                 if str(c.cssAttr["page-break-after"]).lower() == "always":
                     pageBreakAfter = PAGE_BREAK
                 if str(c.cssAttr["page-break-after"]).lower() == "right":
@@ -500,19 +501,19 @@ def pisaLoop(node, c, path=[], **kw):
         CSS2Frag(c, kw, isBlock) 
                           
         # EXTRAS
-        if c.cssAttr.has_key("-pdf-keep-with-next"):
+        if "-pdf-keep-with-next" in c.cssAttr:
             c.frag.keepWithNext = getBool(c.cssAttr["-pdf-keep-with-next"])
-        if c.cssAttr.has_key("-pdf-outline"):
+        if "-pdf-outline" in c.cssAttr:
             c.frag.outline = getBool(c.cssAttr["-pdf-outline"])
-        if c.cssAttr.has_key("-pdf-outline-level"):
+        if "-pdf-outline-level" in c.cssAttr:
             c.frag.outlineLevel = int(c.cssAttr["-pdf-outline-level"])
-        if c.cssAttr.has_key("-pdf-outline-open"):
+        if "-pdf-outline-open" in c.cssAttr:
             c.frag.outlineOpen = getBool(c.cssAttr["-pdf-outline-open"])
         #if c.cssAttr.has_key("-pdf-keep-in-frame-max-width"):
         #    c.frag.keepInFrameMaxWidth = getSize("".join(c.cssAttr["-pdf-keep-in-frame-max-width"]))
         #if c.cssAttr.has_key("-pdf-keep-in-frame-max-height"):
         #    c.frag.keepInFrameMaxHeight = getSize("".join(c.cssAttr["-pdf-keep-in-frame-max-height"]))
-        if c.cssAttr.has_key("-pdf-keep-in-frame-mode"):
+        if "-pdf-keep-in-frame-mode" in c.cssAttr:
             value = str(c.cssAttr["-pdf-keep-in-frame-mode"]).strip().lower()
             if value not in ("shrink", "error", "overflow", "shrink", "truncate"):
                 value = None
@@ -593,8 +594,8 @@ def pisaParser(src, c, default_css="", xhtml=False, encoding=None, xml_output=No
     else:
         parser = html5lib.HTMLParser(tree=treebuilders.getTreeBuilder("dom"))
 
-    if type(src) in types.StringTypes:
-        if type(src) is types.UnicodeType:
+    if type(src) in (str,):
+        if type(src) is str:
             encoding = "utf8"
             src = src.encode(encoding)
         src = pisaTempFile(src, capacity=c.capacity)    

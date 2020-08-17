@@ -6,5 +6,6 @@
 # @jsonify can convert your objects to following types:
 # lists, dicts, numbers and strings
 
+from __future__ import absolute_import
 from turbojson.jsonify import jsonify
 

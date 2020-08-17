@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 from setuptools import setup, find_packages
 from turbogears.finddata import find_package_data
 
 import os
-execfile(os.path.join("tgpisa", "release.py"))
+exec(compile(open(os.path.join("tgpisa", "release.py"), "rb").read(), os.path.join("tgpisa", "release.py"), 'exec'))
 
 packages=find_packages()
 package_data = find_package_data(where='tgpisa',

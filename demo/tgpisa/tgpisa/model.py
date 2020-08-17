@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from turbogears.database import PackageHub
 # import some basic SQLObject classes for declaring the data model
 # (see http://www.sqlobject.org/SQLObject.html#declaring-the-class)

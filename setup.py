@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 __version__ = "$Revision: 247 $"
 __author__  = "$Author: holtwick $"
 __date__    = "$Date: 2008-08-15 13:37:57 +0200 (Fr, 15 Aug 2008) $"

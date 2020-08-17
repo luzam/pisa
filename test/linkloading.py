@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
 __version__ = "$Revision: 194 $"
 __author__  = "$Author: holtwick $"
 __date__    = "$Date: 2008-04-18 18:59:53 +0200 (Fr, 18 Apr 2008) $"
@@ -56,7 +57,7 @@ class myLinkLoader:
                 if new_suffix in (".css", ".gif", ".jpg", ".png"):
                     suffix = new_suffix
             tmpPath = tempfile.mktemp(prefix="pisa-", suffix = suffix)
-            tmpFile = file(tmpPath, "wb")
+            tmpFile = open(tmpPath, "wb")
             try:
                 # Here you may add your own stuff
                 tmpFile.write(dummyLoader(path))
@@ -64,7 +65,7 @@ class myLinkLoader:
                 tmpFile.close()
             self.tmpFileList.append(tmpPath)
             return tmpPath
-        except Exception, e:
+        except Exception as e:
             log.exception("myLinkLoader.getFileName")
         return None
 
@@ -80,7 +81,7 @@ def helloWorld():
             <p>
             <img src="apath/some.png">
         """,
-        file(filename, "wb"),
+        open(filename, "wb"),
         link_callback = lc,
         )
     if not pdf.err:

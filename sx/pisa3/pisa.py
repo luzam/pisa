@@ -15,6 +15,9 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
 __reversion__ = "$Revision: 20 $"
 __author__    = "$Author: holtwick $"
 __date__      = "$Date: 2007-10-09 12:58:24 +0200 (Di, 09 Okt 2007) $"
@@ -24,14 +27,14 @@ import sys
 import os
 import os.path
 import glob
-import urllib2
-import urlparse
+import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
+import six.moves.urllib.parse
 import tempfile
     
-from pisa_version import *
-from pisa_document import *
-from pisa_util import getFile
-from pisa_default import DEFAULT_CSS
+from .pisa_version import *
+from .pisa_document import *
+from .pisa_util import getFile
+from .pisa_default import DEFAULT_CSS
 
 import logging
 log = logging.getLogger("ho.pisa")
@@ -123,7 +126,7 @@ LOG_FORMAT_DEBUG = "%(levelname)s [%(name)s] %(pathname)s line %(lineno)d: %(mes
 #    print options, args
 
 def usage():
-    print USAGE
+    print(USAGE)
 
 class pisaLinkLoader:
 
@@ -146,16 +149,16 @@ class pisaLinkLoader:
             
     def getFileName(self, name, relative=None):
         try:
-            url = urlparse.urljoin(relative or self.src, name)
-            path = urlparse.urlsplit(url)[2]
+            url = six.moves.urllib.parse.urljoin(relative or self.src, name)
+            path = six.moves.urllib.parse.urlsplit(url)[2]
             suffix = ""
             if "." in path:
                 new_suffix = "." + path.split(".")[-1].lower()
                 if new_suffix in (".css", ".gif", ".jpg", ".png"):
                     suffix = new_suffix
             path = tempfile.mktemp(prefix="pisa-", suffix = suffix)            
-            ufile = urllib2.urlopen(url)                     
-            tfile = file(path, "wb")
+            ufile = six.moves.urllib.request.urlopen(url)                     
+            tfile = open(path, "wb")
             while True:
                 data = ufile.read(1024)
                 if not data:
@@ -166,17 +169,17 @@ class pisaLinkLoader:
             tfile.close()
             self.tfileList.append(path)
             if not self.quiet:
-                print "  Loading", url, "to", path
+                print("  Loading", url, "to", path)
             return path
-        except Exception, e:
+        except Exception as e:
             if not self.quiet:
-                print "  ERROR:", e
+                print("  ERROR:", e)
             log.exception("pisaLinkLoader.getFileName")
         return None
 
 def command():
     if "--profile" in sys.argv:
-        print "*** PROFILING ENABLED"
+        print("*** PROFILING ENABLED")
         import cProfile as profile
         import pstats        
         prof = profile.Profile()
@@ -280,20 +283,20 @@ def execute():
 #            booklet = a
 
         if o in ("--copyright", "--version"):
-            print COPYRIGHT
+            print(COPYRIGHT)
             sys.exit(0)
 
         if o in ("--system",):
-            print COPYRIGHT           
-            print
-            print "SYSTEM INFORMATIONS"
-            print "--------------------------------------------"            
-            print "OS:                ", sys.platform
-            print "Python:            ", sys.version             
+            print(COPYRIGHT)           
+            print()
+            print("SYSTEM INFORMATIONS")
+            print("--------------------------------------------")            
+            print("OS:                ", sys.platform)
+            print("Python:            ", sys.version)             
             import html5lib
-            print "html5lib:          ", "?"
+            print("html5lib:          ", "?")
             import reportlab
-            print "Reportlab:         ", reportlab.Version
+            print("Reportlab:         ", reportlab.Version)
             #try:
             #    import pyPdf
             #    print "pyPdf:             ", pyPdf.__version__
@@ -319,11 +322,11 @@ def execute():
         if o in ("-c", "--css"):
             # CSS
             # css = "@import url('%s');" % a
-            css = file(a, "r").read()
+            css = open(a, "r").read()
 
         if o in ("--css-dump",):
             # CSS dump
-            print DEFAULT_CSS
+            print(DEFAULT_CSS)
             return 
 
         if o in ("--xml-dump",):
@@ -382,7 +385,7 @@ def execute():
                 fsrc = getFile(src).getFile()
                 # fsrc = urllib2.urlopen(src)
                 # lc = pisaLinkLoader(src, quiet=quiet).getFileName                
-                src = "".join(urlparse.urlsplit(src)[1:3]).replace("/", "-")                                
+                src = "".join(six.moves.urllib.parse.urlsplit(src)[1:3]).replace("/", "-")                                
             else:
                 fsrc = wpath = os.path.abspath(src)
                 fsrc = open(fsrc, "rb")
@@ -415,13 +418,13 @@ def execute():
             try:
                 open(dest, "wb").close()
             except:
-                print "File '%s' seems to be in use of another application." % dest
+                print("File '%s' seems to be in use of another application." % dest)
                 sys.exit(2)
             fdest = open(dest, "wb")
             fdestclose = 1
     
         if not quiet:
-            print "Converting %s to %s..." % (src, dest)          
+            print("Converting %s to %s..." % (src, dest))          
     
         try:
                                 
@@ -450,13 +453,13 @@ def execute():
                         
             if (not errors) and startviewer:
                 if not quiet:
-                    print "Open viewer for file %s" % dest
+                    print("Open viewer for file %s" % dest)
                 startViewer(dest)
 
         except:
             
             if not quiet: 
-                print "*** ERRORS OCCURED" 
+                print("*** ERRORS OCCURED") 
     
             sys.exit(1)
     

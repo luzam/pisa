@@ -15,15 +15,16 @@
 # limitations under the License.
 
 
+from __future__ import absolute_import
 __reversion__ = "$Revision: 20 $"
 __author__    = "$Author: holtwick $"
 __date__      = "$Date: 2007-10-09 12:58:24 +0200 (Di, 09 Okt 2007) $"
 
-from pisa_context import pisaContext
-from pisa_parser import pisaParser
-from pisa_util import *
-from pisa_reportlab import *
-from pisa_default import DEFAULT_CSS
+from .pisa_context import pisaContext
+from .pisa_parser import pisaParser
+from .pisa_util import *
+from .pisa_reportlab import *
+from .pisa_default import DEFAULT_CSS
 
 from reportlab.platypus.flowables import Spacer
 
@@ -144,7 +145,7 @@ def pisaDocument(
         # doc.info.producer = "pisa <http://www.holtwick.it>"
 
         # Prepare templates and their frames
-        if c.templateList.has_key("body"):
+        if "body" in c.templateList:
             body = c.templateList["body"]
             del c.templateList["body"]
         else:
@@ -163,7 +164,7 @@ def pisaDocument(
         # print body.frames
 
         # print [body] + c.templateList.values()
-        doc.addPageTemplates([body] + c.templateList.values())
+        doc.addPageTemplates([body] + list(c.templateList.values()))
 
         # Use multibuild e.g. if a TOC has to be created
         if c.multiBuild:

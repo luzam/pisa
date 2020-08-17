@@ -7,6 +7,7 @@ directory. When the project is installed, easy_install will create a
 proper start script.
 """
 
+from __future__ import absolute_import
 import sys
 
 from tgpisa.commands import start, ConfigurationError
@@ -14,6 +15,6 @@ from tgpisa.commands import start, ConfigurationError
 if __name__ == "__main__":
     try:
         start()
-    except ConfigurationError, exc:
+    except ConfigurationError as exc:
         sys.stderr.write(str(exc))
         sys.exit(1)

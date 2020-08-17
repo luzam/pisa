@@ -5,6 +5,7 @@
 ## All rights reserved                     ##
 #############################################
 
+from __future__ import absolute_import
 import cherrypy as cp
 import sx.pisa3 as pisa
 import cStringIO as StringIO
@@ -25,7 +26,7 @@ class PDFDemo(object):
     @cp.expose
     def index(self):
         if kid:
-            return file("demo-cherrypy.html","r").read()
+            return open("demo-cherrypy.html","r").read()
 
         return """
         <html><body>
